@@ -1,66 +1,44 @@
 package bottlesong
 
-var bottler []string = []string{
-	"One green bottle hanging on the wall,",
-	"One green bottle hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be no green bottles hanging on the wall.",
+import (
+	"fmt"
+	"strings"
+)
 
-	"Two green bottles hanging on the wall,",
-	"Two green bottles hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be one green bottle hanging on the wall.",
+type bottler struct{}
 
-	"Three green bottles hanging on the wall,",
-	"Three green bottles hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be two green bottles hanging on the wall.",
+var numLetter = map[int]string{0: "No", 1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"}
 
-	"Four green bottles hanging on the wall,",
-	"Four green bottles hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be three green bottles hanging on the wall.",
+func (b *bottler) singularPlural(verse int) string {
+	if verse == 1 {
+		return "bottle"
+	}
+	return "bottles"
+}
 
-	"Five green bottles hanging on the wall,",
-	"Five green bottles hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be four green bottles hanging on the wall.",
+func (b *bottler) getVerses(verse int) []string {
+	versers := make([]string, 4)
+	versers[0] = fmt.Sprintf("%s green %s hanging on the wall,", numLetter[verse], b.singularPlural(verse))
+	versers[1] = fmt.Sprintf("%s green %s hanging on the wall,", numLetter[verse], b.singularPlural(verse))
+	versers[2] = "And if one green bottle should accidentally fall,"
+	versers[3] = fmt.Sprintf("There'll be %s green %s hanging on the wall.", strings.ToLower(numLetter[verse-1]), b.singularPlural(verse-1))
+	return versers
+}
 
-	"Six green bottles hanging on the wall,",
-	"Six green bottles hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be five green bottles hanging on the wall.",
-
-	"Seven green bottles hanging on the wall,",
-	"Seven green bottles hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be six green bottles hanging on the wall.",
-
-	"Eight green bottles hanging on the wall,",
-	"Eight green bottles hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be seven green bottles hanging on the wall.",
-
-	"Nine green bottles hanging on the wall,",
-	"Nine green bottles hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be eight green bottles hanging on the wall.",
-
-	"Ten green bottles hanging on the wall,",
-	"Ten green bottles hanging on the wall,",
-	"And if one green bottle should accidentally fall,",
-	"There'll be nine green bottles hanging on the wall.",
+func NewBottler() *bottler {
+	return &bottler{}
 }
 
 func Recite(startBottles, takeDown int) []string {
-	verses := make([]string, 0)
+	versers := make([]string, 0)
+	b := NewBottler()
 	for takeDown > 0 {
-		for i := 0; i < 4; i++ {
-			verses = append(verses, bottler[(startBottles-1)*4+i])
+		versers = append(versers, b.getVerses(startBottles)...)
+		startBottles -= 1
+		takeDown -= 1
+		if takeDown > 0 {
+			versers = append(versers, "")
 		}
-		startBottles--
-		takeDown--
 	}
-	return verses
-
+	return versers
 }
